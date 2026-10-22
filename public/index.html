@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem Perpustakaan - Aplikasi Pengelolaan Perpustakaan Digital Modern">
+    <title>Sistem Perpustakaan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Chart.js for Condition and Analytics charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- SPA Render Target -->
+        <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+            <div style="text-align: center; color: #64748b;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: #2563eb; margin-bottom: 1rem;"></i>
+                <p style="font-weight: 500;">Memuat Sistem Perpustakaan...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal Container -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-content">
+            <!-- Dynamic modal content -->
+        </div>
+    </div>
+
+    <!-- Application Core Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/router.js"></script>
+
+    <!-- Public Landing Page Views -->
+    <script src="/js/pages/landing.js"></script>
+    <script src="/js/pages/landing-services.js"></script>
+    <script src="/js/pages/admin-landing.js"></script>
+
+    <!-- App Page Views (Matching Figma Community Design) -->
+    <script src="/js/pages/login.js"></script>
+    <script src="/js/pages/first-login.js"></script>
+    <script src="/js/pages/dashboard.js"></script>
+    <script src="/js/pages/book-management.js"></script>
+    <script src="/js/pages/category-management.js"></script>
+    <script src="/js/pages/book-condition.js"></script>
+    <script src="/js/pages/circulation.js"></script>
+    <script src="/js/pages/user-management.js"></script>
+    <script src="/js/pages/reports.js"></script>
+    <script src="/js/pages/profile.js"></script>
+    <script src="/js/pages/catalog.js"></script>
+    <script src="/js/pages/my-bookings.js"></script>
+
+    <!-- App Initialization -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
