@@ -7,42 +7,112 @@ const DashboardPage = {
         const app = document.getElementById('app');
 
         if (user?.role === 'siswa') {
+            const safeNama = escapeHtml(user.nama || user.username);
+            const safeNis = escapeHtml(user.nis || '-');
+            const safeKelas = escapeHtml(user.kelas || 'Siswa SMP');
+
             app.innerHTML = `
                 <div class="app-container student-dashboard">
                     ${Components.renderNavbar('dashboard')}
                     <main class="main-content">
-                        <div class="page-header">
+                        <!-- Welcome Header -->
+                        <div class="page-header" style="flex-wrap: wrap; gap: 1rem; align-items: flex-start;">
                             <div>
-                                <p class="eyebrow">RUANG SISWA</p>
-                                <h1 class="page-title">Halo, ${user.nama || user.username}</h1>
-                                <p class="page-subtitle">Pantau buku, keputusan permohonan, dan jadwal pengembalian Anda.</p>
+                                <h1 class="page-title">Halo, ${safeNama}</h1>
+                                <p class="page-subtitle">NISN: <strong>${safeNis}</strong> · Kelas: <strong>${safeKelas}</strong> — Pantau jadwal peminjaman buku, bukti ACC, dan tenggat pengembalian.</p>
                             </div>
-                            <a href="#katalog" class="btn btn-blue"><i class="fa-solid fa-magnifying-glass"></i><span>Cari buku</span></a>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <a href="#katalog" class="btn btn-blue">
+                                    <i class="fa-solid fa-book-open"></i>
+                                    <span>Cari & Pinjam Buku</span>
+                                </a>
+                                <a href="#peminjaman-saya" class="btn btn-outline">
+                                    <i class="fa-regular fa-calendar-check"></i>
+                                    <span>Peminjaman Saya</span>
+                                </a>
+                            </div>
                         </div>
-                        <section class="student-summary-grid" aria-label="Ringkasan peminjaman">
-                            <article class="student-summary-item">
-                                <span class="student-summary-icon"><i class="fa-solid fa-book-open-reader"></i></span>
-                                <div><span class="student-summary-label">Sedang dipinjam</span><strong id="student-active-count">0</strong><span class="student-summary-note">buku yang sudah diambil</span></div>
+
+                        <!-- 3 Stat Summary Cards -->
+                        <div class="student-summary-grid">
+                            <article class="student-summary-item" onclick="window.location.hash='#peminjaman-saya'" style="cursor: pointer;">
+                                <div class="student-summary-icon icon-purple"><i class="fa-solid fa-book-bookmark"></i></div>
+                                <div>
+                                    <div class="student-summary-label">Sedang Dipinjam</div>
+                                    <strong class="student-summary-value" id="student-active-count">0</strong>
+                                    <span class="student-summary-note">Buku fisik yang sedang aktif Anda bawa</span>
+                                </div>
                             </article>
-                            <article class="student-summary-item">
-                                <span class="student-summary-icon student-summary-icon-alert"><i class="fa-solid fa-bell"></i></span>
-                                <div><span class="student-summary-label">Keputusan permohonan</span><strong id="student-decision-count">0</strong><span class="student-summary-note">diterima atau ditolak</span></div>
+                            <article class="student-summary-item" onclick="window.location.hash='#peminjaman-saya'" style="cursor: pointer;">
+                                <div class="student-summary-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                                <div>
+                                    <div class="student-summary-label">Siap Diambil (ACC)</div>
+                                    <strong class="student-summary-value" id="student-ready-count" style="color: #16a34a;">0</strong>
+                                    <span class="student-summary-note">Disetujui petugas perpustakaan</span>
+                                </div>
                             </article>
-                            <article class="student-summary-item">
-                                <span class="student-summary-icon student-summary-icon-date"><i class="fa-regular fa-calendar-check"></i></span>
-                                <div><span class="student-summary-label">Tenggat terdekat</span><strong id="student-deadline-date">-</strong><span class="student-summary-note" id="student-deadline-book">Tidak ada buku yang perlu dikembalikan</span></div>
+                            <article class="student-summary-item" onclick="window.location.hash='#peminjaman-saya'" style="cursor: pointer;">
+                                <div class="student-summary-icon icon-yellow"><i class="fa-solid fa-hourglass-start"></i></div>
+                                <div>
+                                    <div class="student-summary-label">Menunggu Persetujuan</div>
+                                    <strong class="student-summary-value" id="student-pending-count" style="color: #d97706;">0</strong>
+                                    <span class="student-summary-note">Permohonan dalam antrean verifikasi</span>
+                                </div>
                             </article>
-                        </section>
-                        <section class="student-dashboard-columns">
-                            <div class="student-dashboard-section">
-                                <div class="student-section-heading"><div><p class="eyebrow">SIRKULASI</p><h2>Buku yang sedang dipinjam</h2></div><a href="#peminjaman-saya">Lihat semua <i class="fa-solid fa-arrow-right"></i></a></div>
-                                <div id="student-active-books" class="student-list"><p class="muted-placeholder">Memuat data pinjaman...</p></div>
+                        </div>
+
+                        <!-- Main 2-Column Content -->
+                        <div class="student-dashboard-split-grid">
+                            <!-- Left: Borrowed Books & Deadlines -->
+                            <div class="card student-panel-card">
+                                <div class="card-header">
+                                    <h2 class="card-title">
+                                        <i class="fa-regular fa-calendar-check" style="color: #2563eb;"></i>
+                                        <span>Tenggat & Buku yang Sedang Dipinjam</span>
+                                    </h2>
+                                    <a href="#peminjaman-saya" class="btn btn-outline btn-sm">Lihat Semua</a>
+                                </div>
+                                <div class="card-content" id="student-deadline-container">
+                                    <p style="color: #94a3b8; text-align: center; padding: 2rem;">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Memuat data tenggat...
+                                    </p>
+                                </div>
                             </div>
-                            <div class="student-dashboard-section">
-                                <div class="student-section-heading"><div><p class="eyebrow">PEMBARUAN</p><h2>Notifikasi perpustakaan</h2></div></div>
-                                <div id="student-notifications" class="student-list"><p class="muted-placeholder">Memuat notifikasi...</p></div>
+
+                            <!-- Right: Notifications & Decisions -->
+                            <div class="card student-panel-card">
+                                <div class="card-header">
+                                    <h2 class="card-title">
+                                        <i class="fa-solid fa-bell" style="color: #7c3aed;"></i>
+                                        <span>Pemberitahuan & Keputusan Permohonan</span>
+                                    </h2>
+                                    <span class="badge" style="background: #f1f5f9; color: #475569;" id="student-notif-badge">0 Baru</span>
+                                </div>
+                                <div class="card-content" id="student-decision-container">
+                                    <p style="color: #94a3b8; text-align: center; padding: 2rem;">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Memuat pemberitahuan...
+                                    </p>
+                                </div>
                             </div>
-                        </section>
+                        </div>
+
+                        <!-- Recommendations Section -->
+                        <div class="card student-recommend-card" style="margin-top: 1.5rem;">
+                            <div class="card-header">
+                                <h2 class="card-title">
+                                    <i class="fa-solid fa-fire" style="color: #ea580c;"></i>
+                                    <span>Rekomendasi Koleksi Buku Populer</span>
+                                </h2>
+                                <a href="#katalog" class="btn btn-outline btn-sm">Lihat Seluruh Katalog</a>
+                            </div>
+                            <div class="card-content" style="padding: 1.25rem;">
+                                <div id="student-recommended-grid" class="student-recommended-grid">
+                                    <p style="color: #94a3b8; text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Memuat rekomendasi...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </main>
                 </div>
             `;
@@ -188,150 +258,76 @@ const DashboardPage = {
 
     async loadStudentDashboard() {
         try {
-            const [bookingResponse, notificationResponse] = await Promise.all([
+            const [bookingResponse, notificationResponse, booksResponse] = await Promise.all([
                 API.get('/bookings/my?limit=100'),
-                API.get('/notifications?limit=20')
+                API.get('/notifications?limit=20'),
+                API.get('/books?limit=4')
             ]);
+
             const bookings = bookingResponse.data?.bookings || [];
             const notifications = notificationResponse.data?.notifications || [];
+            const recommendedBooks = booksResponse.data || [];
 
-            // 1. Active Borrowed or Approved books
-            const activeBooks = bookings.filter(item => ['disetujui', 'diambil', 'terlambat'].includes(item.status));
-            const borrowedBadge = document.getElementById('student-borrowed-badge');
-            if (borrowedBadge) borrowedBadge.textContent = `${activeBooks.length} Buku Aktif`;
+            // 1. Metric Counts
+            const borrowedOnly = bookings.filter(item => ['diambil', 'terlambat'].includes(item.status));
+            const approvedOnly = bookings.filter(item => item.status === 'disetujui');
+            const pendingOnly = bookings.filter(item => item.status === 'pending');
 
-            const borrowedContainer = document.getElementById('student-borrowed-container');
-            if (borrowedContainer) {
-                if (activeBooks.length === 0) {
-                    borrowedContainer.innerHTML = `
-                        <div class="empty-state-box" style="text-align: center; padding: 2.5rem 1rem;">
+            const activeCountEl = document.getElementById('student-active-count');
+            const readyCountEl = document.getElementById('student-ready-count');
+            const pendingCountEl = document.getElementById('student-pending-count');
+
+            if (activeCountEl) activeCountEl.textContent = borrowedOnly.length;
+            if (readyCountEl) readyCountEl.textContent = approvedOnly.length;
+            if (pendingCountEl) pendingCountEl.textContent = pendingOnly.length;
+
+            // 2. Deadlines & Active Loans
+            const deadlineContainer = document.getElementById('student-deadline-container');
+            if (deadlineContainer) {
+                if (borrowedOnly.length === 0 && approvedOnly.length === 0) {
+                    deadlineContainer.innerHTML = `
+                        <div class="empty-state-box" style="text-align: center; padding: 2.25rem 1rem;">
                             <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.75rem;">
                                 <i class="fa-solid fa-book-open"></i>
                             </div>
-                            <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">Tidak Ada Buku yang Sedang Dipinjam</h4>
-                            <p style="color: #64748b; font-size: 0.875rem; max-width: 420px; margin: 0 auto 1.25rem;">Anda belum memiliki buku yang sedang dipinjam atau disetujui. Silakan cari buku bacaan menarik di katalog perpustakaan.</p>
+                            <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; font-size: 1rem;">Tidak Ada Tanggungan Pinjaman</h4>
+                            <p style="color: #64748b; font-size: 0.85rem; max-width: 380px; margin: 0 auto 1.25rem;">
+                                Anda tidak memiliki buku yang sedang dipinjam saat ini. Rekam jejak peminjaman Anda sangat tertib!
+                            </p>
                             <a href="#katalog" class="btn btn-blue btn-sm" style="display: inline-flex;">
-                                <i class="fa-solid fa-magnifying-glass"></i> Jelajahi Katalog Buku
+                                <i class="fa-solid fa-magnifying-glass"></i> Jelajahi Buku di Katalog
                             </a>
-                        </div>
-                    `;
-                } else {
-                    borrowedContainer.innerHTML = `
-                        <div class="student-borrowed-list" style="display: flex; flex-direction: column; gap: 0.85rem;">
-                            ${activeBooks.map(item => {
-                                const book = item.book || {};
-                                const isApproved = item.status === 'disetujui';
-                                const isLate = item.status === 'terlambat';
-
-                                return `
-                                    <div class="student-book-item ${isApproved ? 'is-approved-item' : ''}" style="display: flex; gap: 1rem; align-items: center; padding: 0.85rem 1rem; border-radius: var(--radius); border: 1px solid ${isApproved ? '#bbf7d0' : (isLate ? '#fecaca' : 'var(--border)')}; background: ${isApproved ? '#f0fdf4' : (isLate ? '#fef2f2' : '#ffffff')};">
-                                        <div style="width: 48px; height: 64px; flex-shrink: 0; border-radius: 4px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
-                                            ${book.cover ? `<img src="${book.cover}" alt="${book.judul}" style="width: 100%; height: 100%; object-fit: cover;">` : `<i class="fa-solid fa-book" style="color: #94a3b8; font-size: 1.25rem;"></i>`}
-                                        </div>
-                                        <div style="flex: 1; min-width: 0;">
-                                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                                <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                    ${book.judul || 'Buku Perpustakaan'}
-                                                </h4>
-                                                ${Components.renderStatusBadge(item.status)}
-                                            </div>
-                                            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.35rem;">
-                                                ${book.pengarang || '-'} · Rak: <strong>${book.lokasi_rak || 'Umum'}</strong>
-                                            </div>
-                                            <div style="font-size: 0.825rem; font-weight: 500;">
-                                                ${isApproved
-                                                    ? `<span style="color: #166534;"><i class="fa-solid fa-circle-check"></i> Sudah di-ACC! Silakan ambil di perpustakaan pada: <strong>${Components.formatDate(item.tgl_ambil)}</strong></span>`
-                                                    : `<span style="color: ${isLate ? '#dc2626' : '#2563eb'};"><i class="fa-regular fa-clock"></i> Batas Pengembalian: <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong></span>`
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
-                }
-            }
-
-            // 2. Decision Notifications (Accepted / Rejected)
-            const decisionBookings = bookings.filter(item => ['disetujui', 'ditolak'].includes(item.status));
-            const decisionNotifs = notifications.filter(item => /disetujui|ditolak|approval|warning/i.test(`${item.tipe} ${item.judul}`));
-            
-            const totalDecisions = Math.max(decisionBookings.length, decisionNotifs.length);
-            const notifBadge = document.getElementById('student-notif-badge');
-            if (notifBadge) notifBadge.textContent = `${totalDecisions} Pemberitahuan`;
-
-            const decisionContainer = document.getElementById('student-decision-container');
-            if (decisionContainer) {
-                if (decisionBookings.length === 0 && decisionNotifs.length === 0) {
-                    decisionContainer.innerHTML = `
-                        <div style="text-align: center; color: #64748b; padding: 2rem;">
-                            <i class="fa-solid fa-bell-slash" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.75rem; display: block;"></i>
-                            <p style="font-size: 0.875rem;">Belum ada notifikasi keputusan peminjaman yang diterima atau ditolak.</p>
-                        </div>
-                    `;
-                } else {
-                    // Combine into structured decision list
-                    const decisionListHtml = decisionBookings.slice(0, 5).map(item => {
-                        const isApproved = item.status === 'disetujui';
-                        const book = item.book || {};
-                        return `
-                            <div class="decision-alert-item" style="display: flex; gap: 0.85rem; padding: 0.85rem; border-radius: var(--radius); margin-bottom: 0.75rem; background: ${isApproved ? '#f0fdf4' : '#fef2f2'}; border-left: 4px solid ${isApproved ? '#16a34a' : '#ef4444'};">
-                                <div style="color: ${isApproved ? '#16a34a' : '#dc2626'}; font-size: 1.15rem; margin-top: 0.15rem;">
-                                    <i class="fa-solid ${isApproved ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
-                                </div>
-                                <div style="flex: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
-                                        <strong style="color: ${isApproved ? '#14532d' : '#7f1d1d'}; font-size: 0.9rem;">
-                                            ${isApproved ? 'Permohonan Peminjaman Disetujui! ✅' : 'Permohonan Peminjaman Ditolak ❌'}
-                                        </strong>
-                                        <span style="font-size: 0.75rem; color: #64748b;">${Components.formatDate(item.updated_at || item.created_at)}</span>
-                                    </div>
-                                    <p style="font-size: 0.825rem; color: #334155; margin: 0 0 0.35rem 0;">
-                                        Buku: <strong>${book.judul || 'Buku Perpustakaan'}</strong>
-                                    </p>
-                                    <p style="font-size: 0.8rem; color: ${isApproved ? '#166534' : '#991b1b'}; margin: 0;">
-                                        ${isApproved 
-                                            ? `Pihak perpustakaan telah menyetujui permohonan Anda. Jadwal ambil: <strong>${Components.formatDate(item.tgl_ambil)}</strong>. Batas kembali: <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong>.`
-                                            : `Alasan penolakan: <em>${item.alasan_tolak || 'Stok tidak mencukupi atau sedang dalam pemeliharaan.'}</em>`
-                                        }
-                                    </p>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-
-                    decisionContainer.innerHTML = decisionListHtml;
-                }
-            }
-
-            // 3. Return Deadline Reminders
-            const borrowedOnly = bookings.filter(item => ['diambil', 'terlambat'].includes(item.status));
-            const deadlineContainer = document.getElementById('student-deadline-container');
-            if (deadlineContainer) {
-                if (borrowedOnly.length === 0) {
-                    deadlineContainer.innerHTML = `
-                        <div style="padding: 1rem 1.25rem; border-radius: var(--radius); background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
-                            <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; color: #16a34a;"></i>
-                            <div>
-                                <strong style="color: #14532d; display: block; font-size: 0.9rem;">Tidak Ada Tanggungan Pengembalian</strong>
-                                <span style="font-size: 0.825rem; color: #166534;">Anda tidak memiliki buku yang sedang dipinjam saat ini. Rekam jejak peminjaman Anda tertib!</span>
-                            </div>
-                        </div>
-                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1rem; font-size: 0.8rem; color: #64748b;">
-                            <strong style="color: #334155; display: block; margin-bottom: 0.25rem;"><i class="fa-solid fa-circle-info"></i> Ketentuan Pengembalian Buku:</strong>
-                            <ul style="margin: 0; padding-left: 1.25rem; line-height: 1.6;">
-                                <li>Durasi peminjaman standar perpustakaan adalah <strong>7 hari kalender</strong> sejak tanggal pengambilan.</li>
-                                <li>Pengembalian melewati batas tempo dikenakan denda administrasi.</li>
-                                <li>Kembalikan buku dalam kondisi fisik yang baik dan terawat tanpa coretan atau robekan.</li>
-                            </ul>
                         </div>
                     `;
                 } else {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
 
-                    const deadlineCards = borrowedOnly.map(item => {
+                    // Show approved books first (with pickup notice), then borrowed books with deadline countdown
+                    let itemsHtml = '';
+
+                    // Approved books ready for pickup
+                    approvedOnly.forEach(item => {
+                        const book = item.book || {};
+                        const kode = item.kode_booking || `BK-${item.id}`;
+                        itemsHtml += `
+                            <div class="student-deadline-item deadline-approved">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
+                                    <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a;">${escapeHtml(book.judul || 'Buku')}</div>
+                                    <span class="badge" style="background: #dcfce7; color: #166534;"><i class="fa-solid fa-check"></i> Siap Diambil</span>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.4rem;">
+                                    Rak: <strong>${escapeHtml(book.lokasi_rak || 'Umum')}</strong> · Kode: <strong>${escapeHtml(kode)}</strong>
+                                </div>
+                                <div style="font-size: 0.825rem; color: #166534; font-weight: 600;">
+                                    <i class="fa-solid fa-store"></i> Jadwal ambil: <strong>${Components.formatDate(item.tgl_ambil)}</strong>. Ambil buku di perpustakaan.
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Borrowed books with countdown
+                    borrowedOnly.forEach(item => {
                         const book = item.book || {};
                         const deadlineDate = new Date(item.tgl_kembali_rencana);
                         deadlineDate.setHours(0, 0, 0, 0);
@@ -341,63 +337,145 @@ const DashboardPage = {
                         const isOverdue = diffDays < 0 || item.status === 'terlambat';
                         const isUrgent = diffDays >= 0 && diffDays <= 2;
 
-                        let alertClass = 'deadline-safe';
-                        let alertBg = '#eff6ff';
-                        let alertBorder = '#bfdbfe';
-                        let alertColor = '#1d4ed8';
-                        let alertBadge = `<span class="badge" style="background: #dbeafe; color: #1e40af;"><i class="fa-regular fa-clock"></i> Tersisa ${diffDays} Hari</span>`;
-                        let alertIcon = 'fa-calendar-check';
+                        let itemClass = 'deadline-safe';
+                        let badgeHtml = `<span class="badge" style="background: #dbeafe; color: #1e40af;"><i class="fa-regular fa-clock"></i> Sisa ${diffDays} Hari</span>`;
+                        let messageColor = '#1d4ed8';
 
                         if (isOverdue) {
-                            alertClass = 'deadline-late';
-                            alertBg = '#fef2f2';
-                            alertBorder = '#fecaca';
-                            alertColor = '#b91c1c';
-                            alertBadge = `<span class="badge badge-terlambat"><i class="fa-solid fa-triangle-exclamation"></i> TERLAMBAT ${Math.abs(diffDays)} HARI</span>`;
-                            alertIcon = 'fa-triangle-exclamation';
+                            itemClass = 'deadline-late';
+                            badgeHtml = `<span class="badge badge-terlambat"><i class="fa-solid fa-triangle-exclamation"></i> Terlambat ${Math.abs(diffDays)} Hari</span>`;
+                            messageColor = '#b91c1c';
                         } else if (isUrgent) {
-                            alertClass = 'deadline-soon';
-                            alertBg = '#fefce8';
-                            alertBorder = '#fef08a';
-                            alertColor = '#a16207';
-                            alertBadge = `<span class="badge" style="background: #fef08a; color: #854d0e;"><i class="fa-solid fa-hourglass-half"></i> Sisa ${diffDays} Hari Lagi</span>`;
-                            alertIcon = 'fa-hourglass-half';
+                            itemClass = 'deadline-soon';
+                            badgeHtml = `<span class="badge" style="background: #fef08a; color: #854d0e;"><i class="fa-solid fa-hourglass-half"></i> Sisa ${diffDays} Hari Lagi</span>`;
+                            messageColor = '#a16207';
                         }
 
-                        return `
-                            <div style="padding: 1rem; border-radius: var(--radius); background: ${alertBg}; border: 1px solid ${alertBorder}; margin-bottom: 0.75rem;">
+                        itemsHtml += `
+                            <div class="student-deadline-item ${itemClass}">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
-                                    <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a;">
-                                        ${book.judul || 'Buku Perpustakaan'}
-                                    </div>
-                                    ${alertBadge}
+                                    <div style="font-weight: 700; font-size: 0.95rem; color: #0f172a;">${escapeHtml(book.judul || 'Buku')}</div>
+                                    ${badgeHtml}
                                 </div>
-                                <div style="font-size: 0.825rem; color: #475569; margin-bottom: 0.5rem;">
-                                    Pengarang: ${book.pengarang || '-'} · Rak: ${book.lokasi_rak || '-'}
+                                <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.4rem;">
+                                    Rak: <strong>${escapeHtml(book.lokasi_rak || 'Umum')}</strong> · Pengarang: ${escapeHtml(book.pengarang || '-')}
                                 </div>
-                                <div style="font-size: 0.85rem; color: ${alertColor}; font-weight: 500;">
+                                <div style="font-size: 0.825rem; color: ${messageColor}; font-weight: 500;">
                                     ${isOverdue 
-                                        ? `<i class="fa-solid ${alertIcon}"></i> Batas pengembalian telah terlewat pada <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong>. Segera kembalikan ke perpustakaan untuk menghentikan akumulasi denda!`
-                                        : (isUrgent 
-                                            ? `<i class="fa-solid ${alertIcon}"></i> Segera kembalikan sebelum <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong> agar tidak terkena denda keterlambatan.`
-                                            : `<i class="fa-solid ${alertIcon}"></i> Batas akhir pengembalian adalah <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong>.`
-                                        )
+                                        ? `<i class="fa-solid fa-triangle-exclamation"></i> Batas kembali terlewati pada <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong>. Segera kembalikan ke meja sirkulasi!`
+                                        : `<i class="fa-regular fa-calendar-check"></i> Batas akhir pengembalian: <strong>${Components.formatDate(item.tgl_kembali_rencana)}</strong>.`
                                     }
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    deadlineContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            ${itemsHtml}
+                        </div>
+                    `;
+                }
+            }
+
+            // 3. Decision Notifications
+            const decisionBookings = bookings.filter(item => ['disetujui', 'ditolak'].includes(item.status));
+            const decisionNotifs = notifications.filter(item => /disetujui|ditolak|approval|warning|booking/i.test(`${item.tipe} ${item.judul}`));
+
+            const totalNotifs = Math.max(decisionBookings.length, decisionNotifs.length);
+            const notifBadge = document.getElementById('student-notif-badge');
+            if (notifBadge) notifBadge.textContent = `${totalNotifs} Pemberitahuan`;
+
+            const decisionContainer = document.getElementById('student-decision-container');
+            if (decisionContainer) {
+                if (decisionBookings.length === 0 && decisionNotifs.length === 0) {
+                    decisionContainer.innerHTML = `
+                        <div style="text-align: center; color: #64748b; padding: 2.25rem 1rem;">
+                            <i class="fa-solid fa-bell-slash" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.75rem; display: block;"></i>
+                            <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.35rem; font-size: 1rem;">Belum Ada Pemberitahuan</h4>
+                            <p style="font-size: 0.85rem; max-width: 380px; margin: 0 auto;">Pemberitahuan persetujuan atau keputusan peminjaman buku akan muncul di sini secara otomatis.</p>
+                        </div>
+                    `;
+                } else {
+                    const decisionListHtml = decisionBookings.slice(0, 4).map(item => {
+                        const isApproved = item.status === 'disetujui';
+                        const book = item.book || {};
+                        const kode = item.kode_booking || `BK-${item.id}`;
+
+                        return `
+                            <div class="decision-alert-item ${isApproved ? 'decision-approved' : 'decision-rejected'}">
+                                <div class="decision-icon ${isApproved ? 'icon-green' : 'icon-red'}">
+                                    <i class="fa-solid ${isApproved ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                                </div>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.2rem;">
+                                        <strong style="color: ${isApproved ? '#14532d' : '#7f1d1d'}; font-size: 0.9rem;">
+                                            ${isApproved ? 'Permohonan Peminjaman Disetujui (ACC)' : 'Permohonan Peminjaman Ditolak'}
+                                        </strong>
+                                        <span style="font-size: 0.75rem; color: #64748b; white-space: nowrap;">${Components.formatDate(item.updated_at || item.created_at)}</span>
+                                    </div>
+                                    <p style="font-size: 0.825rem; color: #334155; margin: 0 0 0.35rem 0;">
+                                        Buku: <strong>${escapeHtml(book.judul || 'Buku')}</strong> · Kode: <code>${escapeHtml(kode)}</code>
+                                    </p>
+                                    <p style="font-size: 0.8rem; color: ${isApproved ? '#166534' : '#991b1b'}; margin: 0;">
+                                        ${isApproved 
+                                            ? `Jadwal ambil: <strong>${Components.formatDate(item.tgl_ambil)}</strong> di Rak <strong>${escapeHtml(book.lokasi_rak || 'Umum')}</strong>.`
+                                            : `Alasan penolakan: <em>${escapeHtml(item.alasan_tolak || 'Stok tidak mencukupi atau dalam pemeliharaan.')}</em>`
+                                        }
+                                    </p>
                                 </div>
                             </div>
                         `;
                     }).join('');
 
-                    deadlineContainer.innerHTML = `
-                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                            ${deadlineCards}
-                        </div>
-                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.775rem; color: #64748b; margin-top: 0.5rem;">
-                            <i class="fa-solid fa-bell"></i> <em>Tip: Kembalikan buku tepat waktu langsung ke meja sirkulasi perpustakaan untuk menjaga catatan keaktifan Anda.</em>
+                    decisionContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            ${decisionListHtml}
                         </div>
                     `;
                 }
             }
+
+            // 4. Book Recommendations
+            const recommendedContainer = document.getElementById('student-recommended-grid');
+            if (recommendedContainer) {
+                if (recommendedBooks.length === 0) {
+                    recommendedContainer.innerHTML = '<p style="color: #94a3b8; text-align: center; grid-column: 1 / -1;">Belum ada buku tersedia.</p>';
+                } else {
+                    recommendedContainer.innerHTML = recommendedBooks.map(b => {
+                        const isAvailable = Number(b.stok) > 0;
+                        const safeTitle = escapeHtml(b.judul || 'Buku');
+                        const safeAuthor = escapeHtml(b.pengarang || '-');
+                        const coverSrc = b.cover ? escapeHtml(b.cover) : null;
+
+                        return `
+                            <div class="student-rec-card">
+                                <div class="student-rec-thumb">
+                                    ${coverSrc ? `
+                                        <img src="${coverSrc}" alt="Cover" onerror="this.parentElement.innerHTML = '<i class=\\'fa-solid fa-book\\'></i>';">
+                                    ` : `
+                                        <i class="fa-solid fa-book"></i>
+                                    `}
+                                </div>
+                                <div class="student-rec-info">
+                                    <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.7rem; margin-bottom: 0.25rem; display: inline-block;">${escapeHtml(b.genre || 'Umum')}</span>
+                                    <h4 class="student-rec-title" title="${safeTitle}">${safeTitle}</h4>
+                                    <p class="student-rec-author">Karya: ${safeAuthor}</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                                        <span class="stock-pill ${isAvailable ? 'stock-available' : 'stock-empty'}" style="font-size: 0.725rem; padding: 0.15rem 0.45rem;">
+                                            ${isAvailable ? `Tersedia ${b.stok}` : 'Habis'}
+                                        </span>
+                                        <a href="#katalog" class="btn btn-blue btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                                            Pinjam
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
         } catch (error) {
             console.error('Load student dashboard error:', error);
             Components.showToast('Gagal memuat ringkasan peminjaman siswa.', 'error');

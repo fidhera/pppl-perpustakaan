@@ -154,7 +154,7 @@ const defaultLandingSettings = {
 // GET /api/landing/settings (Public)
 router.get('/settings', async (req, res) => {
     try {
-        let settings = defaultLandingSettings;
+        let settings = { ...defaultLandingSettings };
 
         // Try load from DB if available
         try {
@@ -162,7 +162,35 @@ router.get('/settings', async (req, res) => {
             const record = await LandingSetting.findOne({ where: { key: 'main_landing_config' } });
             if (record && record.value) {
                 const parsed = JSON.parse(record.value);
-                settings = { ...defaultLandingSettings, ...parsed };
+                settings = { ...settings, ...parsed };
+
+                // Harmonize root-level and nested properties
+                if (parsed.hero_eyebrow) {
+                    settings.hero = settings.hero || {};
+                    settings.hero.badge = parsed.hero_eyebrow;
+                }
+                if (parsed.hero_title) {
+                    settings.hero = settings.hero || {};
+                    settings.hero.title = parsed.hero_title;
+                }
+                if (parsed.hero_subtitle) {
+                    settings.hero = settings.hero || {};
+                    settings.hero.subtitle = parsed.hero_subtitle;
+                }
+                if (parsed.cards && Array.isArray(parsed.cards)) {
+                    settings.hero_cards = parsed.cards;
+                }
+                if (parsed.stats) {
+                    settings.stats = { ...(settings.stats || {}), ...parsed.stats };
+                }
+                if (parsed.school_name || parsed.address || parsed.phone || parsed.email || parsed.footer_desc) {
+                    settings.footer = settings.footer || {};
+                    if (parsed.school_name) settings.school_name = parsed.school_name;
+                    if (parsed.address) settings.footer.address = parsed.address;
+                    if (parsed.phone) settings.footer.phone = parsed.phone;
+                    if (parsed.email) settings.footer.email = parsed.email;
+                    if (parsed.footer_desc) settings.footer.description = parsed.footer_desc;
+                }
             }
         } catch (dbErr) {
             console.log('Using default landing settings:', dbErr.message);
@@ -199,7 +227,33 @@ router.get('/settings', async (req, res) => {
 router.put('/settings', authenticate, isAdmin, async (req, res) => {
     try {
         await LandingSetting.sync();
-        const newSettings = req.body;
+        const payload = req.body || {};
+
+        // Harmonize payload
+        const newSettings = {
+            hero_eyebrow: payload.hero_eyebrow || 'PERPUSTAKAAN DIGITAL TERPADU',
+            hero_title: payload.hero_title || 'Rumah bagi setiap masa depan.',
+            hero_subtitle: payload.hero_subtitle || '',
+            cards: payload.cards || [],
+            hero_cards: payload.cards || [],
+            stats: payload.stats || {},
+            school_name: payload.school_name || 'SMP Informatika Bina Generasi',
+            address: payload.address || '',
+            phone: payload.phone || '',
+            email: payload.email || '',
+            footer_desc: payload.footer_desc || '',
+            hero: {
+                badge: payload.hero_eyebrow || 'PERPUSTAKAAN DIGITAL TERPADU',
+                title: payload.hero_title || 'Rumah bagi setiap masa depan.',
+                subtitle: payload.hero_subtitle || ''
+            },
+            footer: {
+                description: payload.footer_desc || '',
+                address: payload.address || '',
+                phone: payload.phone || '',
+                email: payload.email || ''
+            }
+        };
 
         let record = await LandingSetting.findOne({ where: { key: 'main_landing_config' } });
         if (record) {

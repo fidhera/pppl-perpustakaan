@@ -4,6 +4,19 @@
  * Inspired by Gunadarma Digital Library aesthetics
  */
 
+// Safe escapeHtml helper
+if (typeof window.escapeHtml !== 'function') {
+    window.escapeHtml = function(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    };
+}
+
 const LandingPage = {
     shuffleInterval: null,
     currentCardIndex: 0,
@@ -31,17 +44,52 @@ const LandingPage = {
         `;
 
         try {
-            // Fetch landing page settings & books from DB
-            const [settingsRes, booksRes] = await Promise.all([
-                API.get('/landing/settings').catch(() => null),
-                API.get('/books?limit=6').catch(() => null)
-            ]);
+            // Fetch landing page settings & books from DB with safe error handling
+            let settings = this.getDefaultSettings();
+            let books = [];
 
-            const settings = (settingsRes && settingsRes.success) ? settingsRes.data : this.getDefaultSettings();
-            const books = (booksRes && booksRes.success && booksRes.data) ? booksRes.data : [];
+            try {
+                const settingsRes = await API.get('/landing/settings');
+                if (settingsRes && settingsRes.success && settingsRes.data) {
+                    settings = { ...settings, ...settingsRes.data };
+                }
+            } catch (e) {
+                console.warn('Using default landing settings:', e);
+            }
+
+            try {
+                const booksRes = await API.get('/books?limit=6');
+                if (booksRes && booksRes.success && Array.isArray(booksRes.data)) {
+                    books = booksRes.data;
+                }
+            } catch (e) {
+                console.warn('Could not load books for landing showcase:', e);
+            }
 
             const user = Auth.getUser();
             const isAdmin = user && (user.role === 'admin' || user.role === 'petugas');
+
+            // Normalize fields from either API structure format
+            const eyebrow = settings.hero_eyebrow || settings.hero?.badge || 'PERPUSTAKAAN DIGITAL TERPADU';
+            const subtitle = settings.hero_subtitle || settings.hero?.subtitle || 'Koleksi buku pembelajaran, literatur digital, ensiklopedia dan referensi sains terlengkap untuk generasi berprestasi.';
+            const cardsData = settings.cards || settings.hero_cards || this.getDefaultSettings().cards;
+            const stats = settings.stats || this.getDefaultSettings().stats;
+
+            // Hero Title Dynamic Parsing
+            const rawTitle = settings.hero_title || (settings.hero?.title ? `${settings.hero.title} ${settings.hero.title_highlight || ''}` : '') || 'Rumah bagi setiap masa depan.';
+            let heroTitleHtml = '';
+            if (rawTitle.includes('masa depan.')) {
+                heroTitleHtml = escapeHtml(rawTitle).replace('masa depan.', '<br><span class="gradient-italic">masa depan.</span>');
+            } else {
+                const words = rawTitle.trim().split(/\s+/);
+                if (words.length > 2) {
+                    const firstPart = words.slice(0, -2).join(' ');
+                    const lastPart = words.slice(-2).join(' ');
+                    heroTitleHtml = `${escapeHtml(firstPart)} <br><span class="gradient-italic">${escapeHtml(lastPart)}</span>`;
+                } else {
+                    heroTitleHtml = `<span class="gradient-italic">${escapeHtml(rawTitle)}</span>`;
+                }
+            }
 
             // Render Page Structure
             app.innerHTML = `
@@ -51,13 +99,12 @@ const LandingPage = {
                     <!-- HERO SECTION -->
                     <section class="landing-hero">
                         <div class="hero-content">
-                            <span class="hero-eyebrow">${escapeHtml(settings.hero_eyebrow || 'PERPUSTAKAAN DIGITAL TERPADU')}</span>
+                            <span class="hero-eyebrow">${escapeHtml(eyebrow)}</span>
                             <h1 class="hero-title font-serif">
-                                Rumah bagi setiap<br>
-                                <span class="gradient-italic">masa depan.</span>
+                                ${heroTitleHtml}
                             </h1>
                             <p class="hero-subtitle">
-                                ${escapeHtml(settings.hero_subtitle || 'Koleksi buku pembelajaran, literatur digital, ensiklopedia dan referensi sains terlengkap untuk generasi berprestasi.')}
+                                ${escapeHtml(subtitle)}
                             </p>
 
                             <!-- Hero Search Bar -->
@@ -80,7 +127,7 @@ const LandingPage = {
                         <!-- 5-CARD SHUFFLE DECK -->
                         <div class="hero-cards-wrapper" id="heroCardsWrapper">
                             <div class="hero-cards-deck" id="heroCardsDeck">
-                                ${this.renderHeroCards(settings.cards)}
+                                ${this.renderHeroCards(cardsData)}
                             </div>
                             <!-- Deck Dots Indicator -->
                             <div class="hero-deck-controls" id="heroDeckDots">
@@ -91,7 +138,7 @@ const LandingPage = {
                         </div>
                     </section>
 
-                    <!-- ACADEMIC FEATURES SECTION -->
+                    <!-- ACADEMIC FEATURES SECTION ("Segala Kebutuhan Akademik Anda") -->
                     <section class="landing-section">
                         <div class="section-header-center">
                             <span class="section-eyebrow">FITUR UTAMA</span>
@@ -206,7 +253,7 @@ const LandingPage = {
                         </div>
                     </section>
 
-                    <!-- FACILITIES SECTION -->
+                    <!-- FACILITIES SECTION ("Ruang membaca yang nyaman...") -->
                     <section class="landing-section" style="background: #ffffff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
                         <div class="facility-container">
                             <div>
@@ -281,20 +328,20 @@ const LandingPage = {
                     <div class="landing-stats-banner">
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <span class="stat-number">${settings.stats ? escapeHtml(settings.stats.stat1_num || '35K+') : '35K+'}</span>
-                                <span class="stat-label">${settings.stats ? escapeHtml(settings.stats.stat1_label || 'Koleksi Buku & E-Book') : 'Koleksi Buku'}</span>
+                                <span class="stat-number">${escapeHtml(stats.stat1_num || stats.total_books || '35K+')}</span>
+                                <span class="stat-label">${escapeHtml(stats.stat1_label || 'Koleksi Buku & E-Book')}</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">${settings.stats ? escapeHtml(settings.stats.stat2_num || '64,196') : '64,196'}</span>
-                                <span class="stat-label">${settings.stats ? escapeHtml(settings.stats.stat2_label || 'Sirkulasi Peminjaman') : 'Sirkulasi Peminjaman'}</span>
+                                <span class="stat-number">${escapeHtml(stats.stat2_num || stats.total_borrows || '64,196')}</span>
+                                <span class="stat-label">${escapeHtml(stats.stat2_label || 'Sirkulasi Peminjaman')}</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">${settings.stats ? escapeHtml(settings.stats.stat3_num || '1,609') : '1,609'}</span>
-                                <span class="stat-label">${settings.stats ? escapeHtml(settings.stats.stat3_label || 'Anggota Terdaftar') : 'Anggota Terdaftar'}</span>
+                                <span class="stat-number">${escapeHtml(stats.stat3_num || stats.active_members || '1,609')}</span>
+                                <span class="stat-label">${escapeHtml(stats.stat3_label || 'Anggota Terdaftar')}</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">${settings.stats ? escapeHtml(settings.stats.stat4_num || '250+') : '250+'}</span>
-                                <span class="stat-label">${settings.stats ? escapeHtml(settings.stats.stat4_label || 'Kategori & Klasifikasi') : 'Kategori Topik'}</span>
+                                <span class="stat-number">${escapeHtml(stats.stat4_num || stats.daily_visitors || '250+')}</span>
+                                <span class="stat-label">${escapeHtml(stats.stat4_label || 'Kategori & Klasifikasi')}</span>
                             </div>
                         </div>
                     </div>
@@ -422,8 +469,8 @@ const LandingPage = {
                 <div class="landing-wrapper">
                     ${Components.renderLandingNavbar('beranda')}
                     <div style="padding: 4rem; text-align: center;">
-                        <p style="color: #ef4444;">Gagal memuat konten beranda. Silakan muat ulang halaman.</p>
-                        <button onclick="LandingPage.render()" class="btn btn-blue">Muat Ulang</button>
+                        <p style="color: #ef4444; font-weight: 600;">Terjadi kesalahan saat memuat tampilan: ${escapeHtml(err.message)}</p>
+                        <button onclick="LandingPage.render()" class="btn btn-blue" style="border-radius: 9999px; margin-top: 1rem;">Muat Ulang</button>
                     </div>
                 </div>
             `;
@@ -435,26 +482,35 @@ const LandingPage = {
      */
     renderHeroCards(cardsData) {
         const defaultCards = this.getDefaultSettings().cards;
-        const cards = (cardsData && cardsData.length === 5) ? cardsData : defaultCards;
+        let cards = defaultCards;
+
+        if (Array.isArray(cardsData) && cardsData.length >= 5) {
+            cards = cardsData.slice(0, 5);
+        }
 
         const colorClasses = ['theme-purple', 'theme-violet', 'theme-indigo', 'theme-fuchsia', 'theme-amber'];
 
         return cards.map((card, i) => {
             const posClass = `pos-${i}`;
             const themeClass = colorClasses[i % colorClasses.length];
+            const badge = card.badge || card.category || 'LITERATUR';
+            const title = card.title || 'Buku Pilihan Siswa';
+            const desc = card.desc || 'Koleksi sumber belajar terpadu SMP Informatika Bina Generasi.';
+            const meta = card.meta || card.badge || 'Koleksi Perpustakaan';
+
             return `
                 <div 
                     class="hero-card ${posClass} ${themeClass}" 
                     data-index="${i}"
                     onclick="LandingPage.handleCardClick(${i})"
                 >
-                    <span class="hero-card-badge">${escapeHtml(card.badge || 'LITERATUR')}</span>
+                    <span class="hero-card-badge">${escapeHtml(badge)}</span>
                     <div class="hero-card-body">
-                        <h3 class="hero-card-title">${escapeHtml(card.title || '')}</h3>
-                        <p class="hero-card-desc">${escapeHtml(card.desc || '')}</p>
+                        <h3 class="hero-card-title">${escapeHtml(title)}</h3>
+                        <p class="hero-card-desc">${escapeHtml(desc)}</p>
                     </div>
                     <div class="hero-card-footer">
-                        <span>${escapeHtml(card.meta || 'Koleksi Perpustakaan')}</span>
+                        <span>${escapeHtml(meta)}</span>
                         <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
@@ -503,7 +559,6 @@ const LandingPage = {
         }
 
         setTimeout(() => {
-            // Reassign positions cyclically
             cards.forEach(card => {
                 let currentPos = -1;
                 for (let i = 0; i < 5; i++) {
@@ -515,11 +570,6 @@ const LandingPage = {
                 }
 
                 if (currentPos !== -1) {
-                    // pos-0 moves to pos-4 (back)
-                    // pos-1 becomes pos-0 (new front)
-                    // pos-2 becomes pos-1
-                    // pos-3 becomes pos-2
-                    // pos-4 becomes pos-3
                     const nextPos = (currentPos + 4) % 5;
                     card.classList.add(`pos-${nextPos}`);
                 }
@@ -545,7 +595,6 @@ const LandingPage = {
         const targetCard = deck.querySelector(`.hero-card[data-index="${targetIdx}"]`);
         if (!targetCard || targetCard.classList.contains('pos-0')) return;
 
-        // Perform single shuffle step towards target
         this.shuffleNext();
     },
 
@@ -555,7 +604,6 @@ const LandingPage = {
 
         const card = deck.querySelector(`.hero-card[data-index="${cardIdx}"]`);
         if (card && card.classList.contains('pos-0')) {
-            // If already at front, navigate to layanan search for this topic
             const title = card.querySelector('.hero-card-title')?.innerText || '';
             Router.navigate(`layanan?q=${encodeURIComponent(title.split(' ')[0] || '')}`);
         } else {
@@ -612,7 +660,7 @@ const LandingPage = {
                 <div class="landing-book-card" onclick="Router.navigate('layanan?q=${encodeURIComponent(book.judul)}')">
                     <div class="book-card-cover-container">
                         ${coverHtml}
-                        <span class="book-card-category-tag">${escapeHtml(book.kategori_nama || 'UMUM')}</span>
+                        <span class="book-card-category-tag">${escapeHtml(book.genre || book.kategori_nama || 'UMUM')}</span>
                     </div>
                     <div class="book-card-info">
                         <h4 class="book-card-title">${escapeHtml(book.judul)}</h4>

@@ -7,6 +7,11 @@ const Booking = sequelize.define('Booking', {
         primaryKey: true,
         autoIncrement: true
     },
+    kode_booking: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: true
+    },
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -35,11 +40,11 @@ const Booking = sequelize.define('Booking', {
     },
     tgl_ambil: {
         type: DataTypes.DATEONLY,
-        allowNull: false
+        allowNull: true
     },
     tgl_kembali_rencana: {
         type: DataTypes.DATEONLY,
-        allowNull: true
+        allowNull: false
     },
     status: {
         type: DataTypes.ENUM('pending', 'disetujui', 'ditolak', 'diambil', 'dikembalikan', 'terlambat'),
@@ -52,12 +57,37 @@ const Booking = sequelize.define('Booking', {
     catatan: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    approved_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: 'users', key: 'id' }
+    },
+    approved_at: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    picked_up_at: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     tableName: 'bookings',
     timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'updated_at',
+    hooks: {
+        beforeValidate: (booking) => {
+            if (!booking.kode_booking) {
+                const now = new Date();
+                const y = now.getFullYear();
+                const m = String(now.getMonth() + 1).padStart(2, '0');
+                const d = String(now.getDate()).padStart(2, '0');
+                const rand = Math.floor(1000 + Math.random() * 9000);
+                booking.kode_booking = `BK-${y}${m}${d}-${rand}`;
+            }
+        }
+    }
 });
 
 module.exports = Booking;

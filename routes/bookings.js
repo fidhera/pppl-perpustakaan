@@ -96,17 +96,28 @@ router.post('/', authenticate, isSiswa, async (req, res) => {
             });
         }
 
+        // Generate unique kode_booking
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d = String(today.getDate()).padStart(2, '0');
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        const kode_booking = `BK-${y}${m}${d}-${rand}`;
+
         // Calculate return date
         const tglAmbil = new Date(tgl_ambil);
         const tglKembaliRencana = new Date(tglAmbil);
         tglKembaliRencana.setDate(tglKembaliRencana.getDate() + BORROW_DAYS);
+        const tglKembaliStr = tglKembaliRencana.toISOString().split('T')[0];
+        const tglBookingStr = today.toISOString().split('T')[0];
 
         const booking = await Booking.create({
+            kode_booking,
             user_id: req.user.id,
             book_id,
-            tgl_booking: new Date(),
+            tgl_booking: tglBookingStr,
             tgl_ambil,
-            tgl_kembali_rencana: tglKembaliRencana,
+            tgl_kembali_rencana: tglKembaliStr,
             status: 'pending',
             catatan
         });

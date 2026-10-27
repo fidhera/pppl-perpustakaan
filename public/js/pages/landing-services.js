@@ -9,6 +9,18 @@
  * - Real-time stock calculation (Tersedia / Sedang Dipinjam)
  * - "Pinjam Buku" button routing to #login
  */
+// Safe escapeHtml helper
+if (typeof window.escapeHtml !== 'function') {
+    window.escapeHtml = function(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    };
+}
 
 const LandingServicesPage = {
     currentQuery: '',

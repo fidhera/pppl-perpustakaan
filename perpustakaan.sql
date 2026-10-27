@@ -13,6 +13,7 @@ USE `perpustakaan`;
 -- --------------------------------------------------------
 -- Drop Tables if exists in order of foreign key dependency
 -- --------------------------------------------------------
+DROP TABLE IF EXISTS `landing_settings`;
 DROP TABLE IF EXISTS `notifications`;
 DROP TABLE IF EXISTS `returns`;
 DROP TABLE IF EXISTS `bookings`;
@@ -169,6 +170,19 @@ CREATE TABLE `notifications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+-- 8. Tabel landing_settings (Konfigurasi Konten Beranda & CMS)
+-- --------------------------------------------------------
+CREATE TABLE `landing_settings` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `key` VARCHAR(100) NOT NULL,
+  `value` LONGTEXT NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 -- Data Awal: Users
 -- Admin: admin / admin123
 -- Pimpinan: pimpinan / pimpinan123
@@ -239,3 +253,9 @@ JOIN (
   UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
 ) AS copy_numbers ON copy_numbers.`copy_no` <= b.`stok`
 WHERE b.`stok` > 0;
+
+-- --------------------------------------------------------
+-- Data Awal: Landing Settings (Konfigurasi Beranda & CMS)
+-- --------------------------------------------------------
+INSERT INTO `landing_settings` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
+(1, 'main_landing_config', '{"hero_eyebrow":"PERPUSTAKAAN DIGITAL TERPADU","hero_title":"Rumah bagi setiap masa depan.","hero_subtitle":"Pusat eksplorasi literasi, materi pembelajaran Kurikulum Merdeka, dan referensi akademik siswa-siswi SMP Informatika Bina Generasi Bogor.","cards":[{"badge":"KURIKULUM MERDEKA","title":"Koleksi Pelajaran & Modul Siswa","desc":"Akses lengkap buku cetak dan digital untuk kelas VII, VIII, dan IX SMP Informatika Bina Generasi.","meta":"Buku Paket Resmi"},{"badge":"DIGITAL REPOSITORY","title":"E-Book & BSE Kemendikbud","desc":"Buku Sekolah Elektronik interaktif yang dapat diakses langsung oleh siswa dan dewan guru.","meta":"BSE Kemendikbud"},{"badge":"PUBLIKASI SEKOLAH","title":"Karya Tulis & Literasi Siswa","desc":"Kumpulan cerpen, artikel sains, puisi, dan laporan proyek P5 terbaik karya siswa-siswi berprestasi.","meta":"Prestasi Siswa"},{"badge":"REFERENSI AKADEMIK","title":"Ensiklopedia Sains & Teknologi","desc":"Rujukan ilmu pengetahuan umum, sejarah dunia, teknologi komputer, dan inovasi masa depan.","meta":"Ensiklopedia"},{"badge":"PENGEMBANGAN MINAT","title":"Sastra, Fiksi & Novel Populer","desc":"Koleksi novel remaja, fiksi inspiratif, biografi tokoh, dan komik edukasi untuk waktu senggang.","meta":"Fiksi Terpilih"}],"stats":{"stat1_num":"35K+","stat1_label":"Koleksi Buku & E-Book","stat2_num":"64,196","stat2_label":"Sirkulasi Peminjaman","stat3_num":"1,609","stat3_label":"Anggota Terdaftar","stat4_num":"250+","stat4_label":"Kategori Topik"},"school_name":"SMP Informatika Bina Generasi","address":"Jl. Raya Ciawi - Gadog No. 12, Kab. Bogor","phone":"(0251) 8241234","email":"perpustakaan@smp-ibg.sch.id","footer_desc":"Perpustakaan SMP Informatika Bina Generasi merupakan pusat sumber belajar yang berdedikasi tinggi untuk menumbuhkan minat baca, memperluas wawasan keilmuan, dan mendukung prestasi akademik civitas akademika."}', NOW(), NOW());

@@ -1,3 +1,15 @@
+// Global HTML Escaping Helper
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+window.escapeHtml = escapeHtml;
+
 // UI Components & Shared Helpers (Matching Figma Community Design)
 const Components = {
     // Render Top Navbar based on active role
@@ -481,9 +493,11 @@ const Components = {
 
     // Render Public Landing Footer (Matching Screenshot 1)
     renderLandingFooter(settings) {
-        const desc = settings?.footer?.description || 'Perpustakaan SMP Informatika Bina Generasi Bogor merupakan unit yang berfungsi memberikan pelayanan informasi kepada siswa, dewan guru dalam melaksanakan kegiatan belajar mengajar dengan koleksi buku fisik dan pustaka digital terlengkap.';
-        const addr = settings?.footer?.address || 'Jl. Babakan Madang No. 45, Sentul, Bogor, Jawa Barat 16810';
-        const phone = settings?.footer?.phone || '(0251) 827-0100';
+        const schoolName = settings?.school_name || 'SMP Informatika Bina Generasi';
+        const desc = settings?.footer_desc || settings?.footer?.description || 'Perpustakaan SMP Informatika Bina Generasi Bogor merupakan unit yang berfungsi memberikan pelayanan informasi kepada siswa, dewan guru dalam melaksanakan kegiatan belajar mengajar dengan koleksi buku fisik dan pustaka digital terlengkap.';
+        const addr = settings?.address || settings?.footer?.address || 'Jl. Raya Ciawi - Gadog No. 12, Kab. Bogor';
+        const phone = settings?.phone || settings?.footer?.phone || '(0251) 8241234';
+        const email = settings?.email || settings?.footer?.email || 'perpustakaan@smp-ibg.sch.id';
 
         const cookieDismissed = localStorage.getItem('cookie_notice_dismissed');
 
@@ -495,14 +509,15 @@ const Components = {
                         <div class="footer-brand-header">
                             <img src="img/logo_smp-informatika-bina-generasi.png" alt="Logo SMP Informatika Bina Generasi" class="footer-logo">
                             <div>
-                                <h3 class="footer-brand-title">SMP INFORMATIKA BINA GENERASI</h3>
+                                <h3 class="footer-brand-title">${escapeHtml(schoolName.toUpperCase())}</h3>
                                 <p class="footer-brand-subtitle">Perpustakaan Sekolah & Pusat Sumber Belajar Digital</p>
                             </div>
                         </div>
-                        <p class="footer-desc">${desc}</p>
+                        <p class="footer-desc">${escapeHtml(desc)}</p>
                         <div class="footer-contact">
-                            <p><i class="fa-solid fa-location-dot"></i> ${addr}</p>
-                            <p><i class="fa-solid fa-phone"></i> ${phone}</p>
+                            <p><i class="fa-solid fa-location-dot"></i> <span>${escapeHtml(addr)}</span></p>
+                            <p><i class="fa-solid fa-phone"></i> <span>${escapeHtml(phone)}</span></p>
+                            ${email ? `<p><i class="fa-solid fa-envelope"></i> <span>${escapeHtml(email)}</span></p>` : ''}
                         </div>
                         <div class="footer-socials">
                             <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>

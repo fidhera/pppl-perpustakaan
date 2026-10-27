@@ -36,7 +36,7 @@
 
 ---
 
-[Deskripsi](#deskripsi) • [Fitur Utama](#fitur-utama) • [Hak Akses Pengguna](#hak-akses-pengguna) • [Alur Kerja Sistem](#alur-kerja-sistem) • [Mekanisme Denda dan Kondisi Buku](#mekanisme-denda-dan-kondisi-buku) • [Memulai](#memulai) • [Direktori](#direktori) • [Penulis](#penulis)
+[Deskripsi](#deskripsi) • [Pembaruan Fitur Terbaru](#-pembaruan-fitur-terbaru) • [Fitur Utama](#fitur-utama) • [Hak Akses Pengguna](#hak-akses-pengguna) • [Alur Kerja Sistem](#alur-kerja-sistem) • [Mekanisme Denda dan Kondisi Buku](#mekanisme-denda-dan-kondisi-buku) • [Memulai](#memulai) • [Direktori](#direktori) • [Penulis](#penulis)
 </div>
 
 ---
@@ -51,6 +51,33 @@ Pengelolaan perpustakaan sekolah konvensional umumnya menghadapi kendala pencata
 3. **Penyelarasan Stok Dinamis & Penalti Denda:** Stok buku tersinkronisasi otomatis saat disetujui, diambil, dan dikembalikan. Sistem secara otomatis menghitung estimasi denda berdasarkan tingkat kerusakan buku saat proses *check-in*.
 4. **Onboarding & Keamanan Akun Berlapis:** Siswa diarahkan melalui alur *first-time sign in* untuk mengonfirmasi NISN, kelas, melengkapi email, dan memperbarui kata sandi awal sebelum mengakses katalog penuh.
 5. **CMS Beranda Terbuka & Laporan Analitik:** Halaman depan publik dapat dikustomisasi langsung oleh admin (*CMS Landing Editor*) untuk menginformasikan layanan kurikulum merdeka, jam operasional, serta statistik real-time koleksi bagi Pimpinan Sekolah.
+
+---
+
+## 🚀 Pembaruan Fitur Terbaru
+
+Rilis terbaru membawa serangkaian pembaruan penting pada arsitektur sistem, peningkatan alur peminjaman mandiri (*self-booking*), pengamanan data, serta pembaruan antarmuka pengguna (UI/UX) yang lebih modern dan responsif:
+
+### 1. 🎫 Sistem Tiket Digital & Kode Booking Otomatis
+- **Unique Booking Code Generator**: Penambahan *hook* otomatis pada model `Booking` dan API backend untuk menghasilkan kode peminjaman unik dengan format standar `BK-YYYYMMDD-XXXX` (contoh: `BK-20261027-4821`).
+- **Kartu Bukti ACC Pengambilan Buku (*Print-Ready Ticket*)**: Detail permohonan yang telah disetujui petugas perpustakaan disajikan dalam bentuk tiket fisik digital yang elegan, memuat identitas siswa (Nama, NISN, Kelas), badge kode booking, jadwal pengambilan, tenggat pengembalian, instruksi pengambilan fisik, serta tombol cetak/simpan PDF langsung (`window.print()`).
+- **Pelacakan Status & Pembatalan Mandiri**: Antarmuka *Peminjaman Saya* kini dilengkapi tab filter status sirkulasi (*Semua, Menunggu ACC, Aktif Dipinjam, Selesai, Ditolak*) dan tombol pembatalan mandiri untuk permohonan berstatus *pending*.
+
+### 2. 📚 Peningkatan Form Peminjaman Katalog & Estimasi Waktu Real-Time
+- **Modal Booking Buku Interaktif**: Pada halaman katalog, modal peminjaman buku kini menampilkan kartu pratinjau buku (sampul, pengarang, lokasi rak, dan kuota stok aktif).
+- **Kalkulator Pengembalian Otomatis**: Pemilih tanggal rencana pengambilan buku secara otomatis menghitung dan menampilkan estimasi tanggal batas pengembalian (+7 hari kalender) secara langsung tanpa perlu input manual.
+
+### 3. 📊 Dashboard Siswa Terpadu (*Personalized Student Dashboard*)
+- **Rekomendasi Koleksi Buku**: Menampilkan kurasi buku terpopuler dan teranyar yang siap dipinjam langsung dari dashboard siswa.
+- **Peringatan Batas Waktu Cerdas**: Indikator visual real-time untuk memantau sisa durasi peminjaman, peringatan menjelang jatuh tempo (status waspada), serta peringatan tegas jika melewati batas tempo (*overdue*) dengan jumlah hari keterlambatan.
+
+### 4. ⚙️ Integrasi Basis Data SQL untuk CMS Beranda (`landing_settings`)
+- **Tabel Basis Data SQL Permanen**: Menambahkan skema tabel `landing_settings` pada `perpustakaan.sql` untuk persistensi konfigurasi beranda di server MySQL secara aman.
+- **Sinkronisasi Data CMS Landing Editor**: Harmonisasi endpoint `GET /api/landing/settings` dan `PUT /api/landing/settings` untuk integrasi dinamis teks banner *hero*, kartu kurikulum unggulan, statistik perpustakaan, hingga data kontak dan lokasi sekolah pada footer.
+
+### 5. 🛡️ Keamanan & Penyempurnaan Antarmuka (UI/UX)
+- **Sanitasi Konten XSS**: Pemasangan fungsi global `escapeHtml` untuk memproteksi rendering elemen DOM dinamis dari kerentanan injeksi script berbahaya.
+- **Desain Modern & Responsif**: Penambahan lebih dari 800 baris aturan CSS terstruktur pada `style.css` untuk tata letak kartu buku (*catalog grid*), tiket bukti booking, badge status sirkulasi, dan optimasi tampilan ramah perangkat seluler (*mobile-first*).
 
 ---
 
@@ -204,7 +231,7 @@ Ikuti langkah-langkah berikut secara berurutan untuk menjalankan proyek di lingk
 Buka Terminal / Command Prompt / PowerShell, lalu jalankan:
 
 ```bash
-git clone https://github.com/fidhera/perpustakaan.git
+git clone https://github.com/fidhera/pppl-perpustakaan.git
 cd perpustakaan
 ```
 
