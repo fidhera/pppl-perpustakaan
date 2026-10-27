@@ -7,7 +7,6 @@
 
 <br/>
 
-<!-- Identity & Community -->
 [![Built by fidhera](https://img.shields.io/badge/Built%20by-fidhera-E50914?style=for-the-badge&logo=github)](https://github.com/fidhera)
 [![Instagram](https://img.shields.io/badge/Instagram-Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/fidhera)
 [![Discord](https://img.shields.io/badge/Discord-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/cPbJn86jM)
@@ -15,386 +14,304 @@
 
 <br/>
 
-<!-- Backend & Core Tech Stack -->
 [![Node.js Version](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Framework](https://img.shields.io/badge/Framework-Express%205-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![ORM](https://img.shields.io/badge/ORM-Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)](https://sequelize.org/)
 [![Database](https://img.shields.io/badge/Database-MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-
-<!-- Security & Utilities -->
 [![Authentication](https://img.shields.io/badge/Auth-JWT%20%7C%20Bcrypt-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)](https://jwt.io/)
 [![Uploads](https://img.shields.io/badge/File%20Upload-Multer-FF6F00?style=for-the-badge)](https://github.com/expressjs/multer)
-
-<!-- Frontend & Visualization -->
 [![Frontend](https://img.shields.io/badge/Architecture-Vanilla%20JS%20SPA-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Analytics](https://img.shields.io/badge/Analytics-Chart.js-FF6384?style=for-the-badge&logo=chart.js&logoColor=white)](https://www.chartjs.org/)
 [![Icons](https://img.shields.io/badge/Icons-Font%20Awesome%206-528DD7?style=for-the-badge&logo=font-awesome&logoColor=white)](https://fontawesome.com/)
 
 <br/>
 
-**Sistem Informasi Perpustakaan Digital SMP Informatika Bina Generasi** adalah platform otomasi perpustakaan sekolah modern berbasis web *Single Page Application* (SPA). Sistem ini mengintegrasikan katalog literasi sekolah, otomasi sirkulasi peminjaman & *booking* buku mandiri bagi siswa, pelacakan kondisi fisik buku per eksemplar fisik (*item-level tracking*), kalkulasi denda otomatis, hingga panel laporan analitik interaktif bagi pimpinan dan pengelola perpustakaan.
+Aplikasi web pengelolaan perpustakaan sekolah berbasis Single Page Application (SPA). Sistem ini mencakup katalog buku, peminjaman mandiri oleh siswa, pelacakan kondisi fisik tiap eksemplar, perhitungan denda, serta rekapitulasi data untuk pihak sekolah.
 
 ---
 
-[Deskripsi](#deskripsi) • [Pembaruan Fitur Terbaru](#-pembaruan-fitur-terbaru) • [Fitur Utama](#fitur-utama) • [Hak Akses Pengguna](#hak-akses-pengguna) • [Alur Kerja Sistem](#alur-kerja-sistem) • [Mekanisme Denda dan Kondisi Buku](#mekanisme-denda-dan-kondisi-buku) • [Memulai](#memulai) • [Direktori](#direktori) • [Penulis](#penulis)
+[Deskripsi](#deskripsi) • [Pembaruan Fitur Terbaru](#pembaruan-fitur-terbaru) • [Fitur Utama](#fitur-utama) • [Hak Akses Pengguna](#hak-akses-pengguna) • [Alur Kerja Sistem](#alur-kerja-sistem) • [Denda dan Kondisi Buku](#denda-dan-kondisi-buku) • [Panduan Instalasi](#panduan-instalasi) • [Struktur Direktori](#struktur-direktori) • [Pengembang](#pengembang)
 </div>
 
 ---
 
 ## Deskripsi
 
-Pengelolaan perpustakaan sekolah konvensional umumnya menghadapi kendala pencatatan manual buku yang rentan selisih stok, tidak adanya pelacakan kondisi fisik setiap eksemplar buku yang dipinjam, antrean panjang peminjaman, serta penyusunan rekapitulasi laporan yang memakan waktu.
+Sistem ini dibuat untuk menggantikan pencatatan manual di perpustakaan sekolah yang sering mengalami kendala selisih stok, hilangnya riwayat kondisi fisik buku, dan antrean saat peminjaman.
 
-**Sistem Perpustakaan SMP Informatika Bina Generasi** mengatasi berbagai kendala tersebut melalui integrasi sistem digital terpadu:
-1. **Otomasi Sirkulasi Mandiri (Self-Booking):** Siswa dapat menelusuri katalog secara daring dari rumah maupun gawai pribadi dan melakukan *booking* buku sebelum mengambilnya di meja sirkulasi.
-2. **Pelacakan Eksemplar Fisik (*Book Copy Tracking*):** Setiap buku fisik memiliki kode eksemplar unik (contoh: `BK-001-001`) dengan pencatatan riwayat kondisi fisik (*Baik*, *Rusak Ringan*, *Rusak Berat*, *Hilang*) dan petugas pemeriksa yang bertanggung jawab.
-3. **Penyelarasan Stok Dinamis & Penalti Denda:** Stok buku tersinkronisasi otomatis saat disetujui, diambil, dan dikembalikan. Sistem secara otomatis menghitung estimasi denda berdasarkan tingkat kerusakan buku saat proses *check-in*.
-4. **Onboarding & Keamanan Akun Berlapis:** Siswa diarahkan melalui alur *first-time sign in* untuk mengonfirmasi NISN, kelas, melengkapi email, dan memperbarui kata sandi awal sebelum mengakses katalog penuh.
-5. **CMS Beranda Terbuka & Laporan Analitik:** Halaman depan publik dapat dikustomisasi langsung oleh admin (*CMS Landing Editor*) untuk menginformasikan layanan kurikulum merdeka, jam operasional, serta statistik real-time koleksi bagi Pimpinan Sekolah.
+Fokus utama aplikasi ini:
+1. Peminjaman mandiri oleh siswa melalui katalog daring sebelum mengambil buku di ruang baca.
+2. Pelacakan per eksemplar fisik dengan kode unik (misal: `BK-001-001`) beserta riwayat kondisi fisik (Baik, Rusak Ringan, Rusak Berat, Hilang).
+3. Penyesuaian stok otomatis saat buku disetujui, diambil, dan dikembalikan, lengkap dengan kalkulasi denda jika ada kerusakan atau keterlambatan.
+4. Verifikasi akun awal bagi siswa baru untuk melengkapi data kelas, email, dan mengganti password bawaan.
+5. Pengaturan konten halaman beranda sekolah langsung dari dashboard admin.
 
 ---
 
-## 🚀 Pembaruan Fitur Terbaru
+## Pembaruan Fitur Terbaru
 
-Rilis terbaru membawa serangkaian pembaruan penting pada arsitektur sistem, peningkatan alur peminjaman mandiri (*self-booking*), pengamanan data, serta pembaruan antarmuka pengguna (UI/UX) yang lebih modern dan responsif:
+Berikut rincian pembaruan yang baru saja diselesaikan pada sistem:
 
-### 1. 🎫 Sistem Tiket Digital & Kode Booking Otomatis
-- **Unique Booking Code Generator**: Penambahan *hook* otomatis pada model `Booking` dan API backend untuk menghasilkan kode peminjaman unik dengan format standar `BK-YYYYMMDD-XXXX` (contoh: `BK-20261027-4821`).
-- **Kartu Bukti ACC Pengambilan Buku (*Print-Ready Ticket*)**: Detail permohonan yang telah disetujui petugas perpustakaan disajikan dalam bentuk tiket fisik digital yang elegan, memuat identitas siswa (Nama, NISN, Kelas), badge kode booking, jadwal pengambilan, tenggat pengembalian, instruksi pengambilan fisik, serta tombol cetak/simpan PDF langsung (`window.print()`).
-- **Pelacakan Status & Pembatalan Mandiri**: Antarmuka *Peminjaman Saya* kini dilengkapi tab filter status sirkulasi (*Semua, Menunggu ACC, Aktif Dipinjam, Selesai, Ditolak*) dan tombol pembatalan mandiri untuk permohonan berstatus *pending*.
+### Tiket Digital dan Kode Booking Otomatis
+- Penambahan kode booking unik berformat `BK-YYYYMMDD-XXXX` (misal: `BK-20261027-4821`) pada model database dan endpoint peminjaman.
+- Halaman bukti peminjaman yang disetujui menampilkan tiket digital berisi nama siswa, NISN, kelas, kode booking, batas pengembalian, serta tombol cetak bukti fisik.
+- Siswa dapat memfilter riwayat peminjaman berdasarkan status (Menunggu Persetujuan, Sedang Dipinjam, Selesai, Ditolak) atau membatalkan permohonan yang belum diverifikasi.
 
-### 2. 📚 Peningkatan Form Peminjaman Katalog & Estimasi Waktu Real-Time
-- **Modal Booking Buku Interaktif**: Pada halaman katalog, modal peminjaman buku kini menampilkan kartu pratinjau buku (sampul, pengarang, lokasi rak, dan kuota stok aktif).
-- **Kalkulator Pengembalian Otomatis**: Pemilih tanggal rencana pengambilan buku secara otomatis menghitung dan menampilkan estimasi tanggal batas pengembalian (+7 hari kalender) secara langsung tanpa perlu input manual.
+### Modal Peminjaman dan Hitung Batas Waktu
+- Modal booking di katalog menampilkan pratinjau buku, lokasi rak, dan sisa stok.
+- Sistem otomatis menghitung batas pengembalian buku 7 hari ke depan begitu tanggal rencana pengambilan dipilih.
 
-### 3. 📊 Dashboard Siswa Terpadu (*Personalized Student Dashboard*)
-- **Rekomendasi Koleksi Buku**: Menampilkan kurasi buku terpopuler dan teranyar yang siap dipinjam langsung dari dashboard siswa.
-- **Peringatan Batas Waktu Cerdas**: Indikator visual real-time untuk memantau sisa durasi peminjaman, peringatan menjelang jatuh tempo (status waspada), serta peringatan tegas jika melewati batas tempo (*overdue*) dengan jumlah hari keterlambatan.
+### Tampilan Dashboard Siswa
+- Menampilkan rekomendasi buku terbaru dan terpopuler di halaman dashboard siswa.
+- Kartu pengingat jatuh tempo yang menghitung sisa hari peminjaman atau menandai status terlambat jika melewati batas waktu.
 
-### 4. ⚙️ Integrasi Basis Data SQL untuk CMS Beranda (`landing_settings`)
-- **Tabel Basis Data SQL Permanen**: Menambahkan skema tabel `landing_settings` pada `perpustakaan.sql` untuk persistensi konfigurasi beranda di server MySQL secara aman.
-- **Sinkronisasi Data CMS Landing Editor**: Harmonisasi endpoint `GET /api/landing/settings` dan `PUT /api/landing/settings` untuk integrasi dinamis teks banner *hero*, kartu kurikulum unggulan, statistik perpustakaan, hingga data kontak dan lokasi sekolah pada footer.
+### Penyimpanan CMS Beranda ke Basis Data
+- Tabel `landing_settings` ditambahkan ke basis data MySQL agar perubahan teks banner, kartu informasi, kontak, dan statistik beranda tersimpan permanen.
+- Endpoint `GET` dan `PUT` pada `/api/landing/settings` diselaraskan agar data beranda langsung sinkron dengan editor admin.
 
-### 5. 🛡️ Keamanan & Penyempurnaan Antarmuka (UI/UX)
-- **Sanitasi Konten XSS**: Pemasangan fungsi global `escapeHtml` untuk memproteksi rendering elemen DOM dinamis dari kerentanan injeksi script berbahaya.
-- **Desain Modern & Responsif**: Penambahan lebih dari 800 baris aturan CSS terstruktur pada `style.css` untuk tata letak kartu buku (*catalog grid*), tiket bukti booking, badge status sirkulasi, dan optimasi tampilan ramah perangkat seluler (*mobile-first*).
+### Keamanan dan Tampilan
+- Penambahan fungsi pembersih teks untuk mencegah celah keamanan XSS pada data yang dimasukkan pengguna.
+- Perapian tampilan kartu katalog, tiket peminjaman, serta penyesuaian tata letak agar nyaman dibuka lewat layar ponsel.
 
 ---
 
 ## Fitur Utama
 
-### 1. Landing Page Publik & Editor CMS (`/beranda` & `/kelola-beranda`)
-- **Hero & Search Box Cerdas:** Banner informasi resmi sekolah dengan bilah pencarian instan berdasarkan judul, pengarang, materi pelajaran, atau ISBN.
-- **Koleksi Unggulan & Layanan Kurikulum Merdeka:** Kartu etalase buku paket kelas VII, VIII, IX, BSE Kemendikbud, publikasi prestasi siswa, dan ensiklopedia sains.
-- **CMS Editor Terintegrasi:** Admin dapat memperbarui teks *hero*, kartu layanan, kontak perpustakaan, dan informasi sekolah secara dinamis tanpa mengubah baris kode.
+### 1. Halaman Beranda dan Editor CMS
+- Bilah pencarian cepat untuk mencari buku berdasarkan judul, pengarang, materi pelajaran, atau ISBN.
+- Kartu informasi seputar koleksi pelajaran kelas VII, VIII, IX, dan buku sekolah digital.
+- Panel admin untuk mengubah teks sambutan, informasi layanan, dan kontak perpustakaan tanpa perlu menyentuh kode program.
 
-### 2. Katalog Buku & Pencarian Real-Time (`/katalog` & `/layanan`)
-- **Pencarian Multifaset:** Filter cepat berdasarkan kategori/genre, status ketersediaan (*Tersedia/Dipinjam/Habis*), kondisi buku, dan kata kunci.
-- **Informasi Lokasi Rak & Metadata Lengkap:** Menampilkan penerbit, tahun terbit, ISBN, deskripsi ringkas, letak rak fisik di ruang baca, dan kuota stok aktif.
+### 2. Katalog Buku
+- Filter buku berdasarkan kategori atau genre, status ketersediaan, dan kondisi fisik.
+- Informasi detail buku mencakup pengarang, penerbit, nomor rak di ruang baca, dan jumlah stok yang tersedia.
 
-### 3. Sirkulasi Peminjaman & Booking Siswa (`/peminjaman` & `/peminjaman-saya`)
-- **Pemesanan Mandiri Siswa (Self-Booking):** Siswa dapat membooking buku dengan batas maksimal 2 buku aktif sekaligus dan menentukan tanggal rencana pengambilan.
-- **Approval Workflow Admin:** Admin dapat memverifikasi permohonan (*Setujui* atau *Tolak* disertai alasan penolakan).
-- **Pengambilan Buku Fisik (Pickup):** Penugasan eksemplar fisik buku secara otomatis (`BookCopy`) dan pengurangan stok tersedia saat buku diserahkan ke siswa.
-- **Pengembalian Buku (Return):** Pencatatan tanggal pengembalian, verifikasi kondisi fisik buku, dan penyesuaian otomatis stok buku.
-- **Penanganan Keterlambatan (Overdue):** Penandaan status terlambat bagi peminjam yang melewati batas durasi pinjam (default: 7 hari).
+### 3. Sirkulasi Peminjaman
+- Siswa dapat mengajukan peminjaman hingga 2 buku aktif sekaligus.
+- Petugas memeriksa permohonan (menyetujui atau menolak disertai alasan).
+- Alokasi kode eksemplar fisik otomatis saat buku diserahkan ke siswa.
+- Pengembalian buku mencatat tanggal kembali, kondisi fisik buku, dan penyesuaian stok kembali.
 
-### 4. Manajemen Kondisi Buku Per Eksemplar (`/kondisi-buku`)
-- **Pelacakan Fisik Eksemplar Unik:** Mengelola inventaris detail setiap eksemplar buku dengan kode unik.
-- **Visualisasi Chart.js Donut:** Grafik interaktif distribusi kondisi buku (*Baik*, *Rusak Ringan*, *Rusak Berat*, *Hilang*).
-- **Audit Kondisi:** Catatan detail kerusakan buku beserta nama staf pemeriksa (*condition_updated_by*).
+### 4. Pelacakan Kondisi Buku
+- Pencatatan nomor eksemplar unik untuk setiap buku fisik.
+- Grafik donat kondisi fisik buku (Baik, Rusak Ringan, Rusak Berat, Hilang).
+- Catatan detail riwayat kerusakan buku beserta nama petugas yang memeriksa.
 
-### 5. Manajemen Koleksi & Kategori (`/kelola-buku` & `/kategori`)
-- **CRUD Buku Terpusat:** Penambahan buku baru, penyuntingan data buku, unggah *cover image* dengan Multer, serta sinkronisasi otomatis stok terhadap jumlah eksemplar.
-- **Pengarsipan Aman (Soft Delete):** Menonaktifkan buku tanpa menghapus histori peminjaman lampau (`is_active: false`).
-- **Kelola Kategori/Genre:** Pengelompokan buku ke dalam kategori tematik (Sains, Fiksi, Bahasa, Teknologi, Sejarah, dsb).
+### 5. Pengelolaan Data Buku dan Kategori
+- Form tambah dan ubah data buku, unggah sampul buku, dan sinkronisasi jumlah eksemplar.
+- Penonaktifan buku tanpa menghapus histori peminjaman lama.
+- Pengelompokan koleksi ke dalam kategori tematik seperti Pendidikan, Fiksi, Teknologi, dan Sejarah.
 
-### 6. Manajemen Pengguna & First-Time Onboarding (`/manajemen-user` & `/lengkapi-akun`)
-- **Autentikasi Aman:** Berbasis JWT (*JSON Web Token*) dengan enkripsi kata sandi menggunakan `bcryptjs`.
-- **First-Login Wizard:** Siswa yang baru dibuatkan akun oleh admin diwajibkan melengkapi nama, email, kelas, dan mengganti kata sandi bawaan pada saat login pertama.
-- **Admin User Management:** Admin dapat membuat akun pengguna baru, mencari data pengguna, mengatur role (*admin, pimpinan, siswa*), serta menonaktifkan akun.
+### 6. Pengelolaan Pengguna
+- Autentikasi berbasis JWT dengan enkripsi kata sandi menggunakan bcrypt.
+- Alur login pertama bagi siswa untuk memperbarui identitas dan mengganti kata sandi bawaan.
+- Menu admin untuk menambah, mencari, mengatur hak akses, atau menonaktifkan akun.
 
-### 7. Laporan & Dashboard Analitik (`/dashboard` & `/laporan`)
-- **Ringkasan Metrik Cepat:** Total judul buku, buku tersedia, buku sedang dipinjam, peminjaman aktif, peminjaman tertunda, dan buku yang ditambahkan bulan ini.
-- **Analisis Tren Koleksi:** Grafik pertumbuhan koleksi dan tren peminjaman buku.
-- **Buku Terpopuler:** Daftar 10 buku yang paling sering dipinjam oleh para siswa.
-- **Filter Periode Laporan:** Filter data laporan berdasarkan tahun, bulan, atau rentang tanggal tertentu yang siap dicetak (*print-ready view*).
-
-### 8. Sistem Notifikasi Internal (`/api/notifications`)
-- Notifikasi terkirim otomatis ke akun siswa saat pengajuan booking disetujui, ditolak, buku berhasil diambil, buku dikembalikan, atau jika masa pinjam terlewat.
+### 7. Laporan dan Statistik
+- Ringkasan total judul, buku dipinjam, buku tersedia, dan peminjaman tertunda.
+- Grafik pertumbuhan koleksi buku per bulan dan daftar buku paling sering dipinjam.
+- Filter laporan berdasarkan rentang tanggal untuk kebutuhan arsip dan cetak.
 
 ---
 
 ## Hak Akses Pengguna
 
-Sistem menerapkan prinsip *Role-Based Access Control* (RBAC) dengan 3 level kewenangan:
-
 | Modul / Fitur | Administrator | Pimpinan Sekolah | Siswa |
 |---|:---:|:---:|:---:|
-| Akses Landing Page & Katalog Publik | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Melakukan Booking Buku Mandiri | :x: | :x: | :white_check_mark: |
+| Akses Beranda & Katalog Publik | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Pengajuan Booking Buku Mandiri | :x: | :x: | :white_check_mark: |
 | Riwayat Peminjaman Pribadi & Notifikasi | :x: | :x: | :white_check_mark: |
-| Pengaturan Profil & First Login Setup | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Persetujuan / Penolakan Booking | :white_check_mark: | :x: | :x: |
-| Konfirmasi Pengambilan & Pengembalian Buku | :white_check_mark: | :x: | :x: |
-| Manajemen Data Buku & Unggah Cover | :white_check_mark: | :x: | :x: |
-| Manajemen Eksemplar & Kondisi Buku | :white_check_mark: | :white_check_mark: *(View)* | :x: |
-| Manajemen Kategori Buku | :white_check_mark: | :x: | :x: |
-| Manajemen Pengguna (Siswa/Staf) | :white_check_mark: | :x: | :x: |
-| Editor CMS Beranda (Landing Page) | :white_check_mark: | :x: | :x: |
-| Akses Dashboard Statistik Perpustakaan | :white_check_mark: | :white_check_mark: | :x: |
-| Akses & Cetak Laporan Sirkulasi Lengkap | :white_check_mark: | :white_check_mark: | :x: |
+| Pengaturan Profil & Ganti Password | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Verifikasi Permohonan Booking | :white_check_mark: | :x: | :x: |
+| Konfirmasi Pengambilan & Pengembalian | :white_check_mark: | :x: | :x: |
+| Kelola Data Buku & Unggah Sampul | :white_check_mark: | :x: | :x: |
+| Kelola Eksemplar & Kondisi Buku | :white_check_mark: | :white_check_mark: *(Lihat)* | :x: |
+| Kelola Kategori Buku | :white_check_mark: | :x: | :x: |
+| Kelola Akun Pengguna | :white_check_mark: | :x: | :x: |
+| Editor CMS Beranda | :white_check_mark: | :x: | :x: |
+| Akses Dashboard Statistik | :white_check_mark: | :white_check_mark: | :x: |
+| Cetak Laporan Sirkulasi | :white_check_mark: | :white_check_mark: | :x: |
 
 ---
 
 ## Alur Kerja Sistem
 
 ```text
-[Siswa: Telusuri Katalog]
+[Siswa Memilih Buku di Katalog]
            │
            ▼
-[Pilih Buku & Ajukan Booking (Maks. 2 Buku)]
+[Ajukan Peminjaman (Maksimal 2 Buku)]
            │
            ▼
-[Status: PENDING] ──────────────────────────┐
-           │                                │
-           ▼                                ▼
-[Admin: Review Permohonan]         [Admin: Tolak Permohonan]
-           │                                │
-           ▼                                ▼
-[Status: DISETUJUI]                [Status: DITOLAK]
-           │                       (Siswa menerima notifikasi & alasan)
+[Status: Menunggu Persetujuan] ───────────────┐
+           │                                   │
+           ▼                                   ▼
+[Petugas Menyetujui]                  [Petugas Menolak]
+           │                                   │
+           ▼                                   ▼
+[Status: Disetujui]                   [Status: Ditolak]
+           │                          (Siswa mendapat alasan penolakan)
            ▼
-[Siswa Datang ke Perpustakaan]
+[Siswa Mengambil Buku di Perpustakaan]
            │
            ▼
-[Admin Konfirmasi Pengambilan (Pickup)] ──> Sistem mengalokasikan kode eksemplar fisik
-           │                                & mengurangi stok tersedia (-1)
+[Petugas Mengonfirmasi Pengambilan] ──> Sistem mencatat kode eksemplar
+           │                            dan mengurangi stok buku (-1)
            ▼
-[Status: DIAMBIL / AKTIF DIPINJAM]
-(Durasi Pinjam: 7 Hari)
+[Status: Sedang Dipinjam]
+(Batas Waktu: 7 Hari)
            │
-           ├─── (Jika melewati batas) ───> [Status: TERLAMBAT] (Notifikasi Peringatan)
+           ├─── (Melewati batas) ───> [Status: Terlambat]
            │
            ▼
 [Siswa Mengembalikan Buku]
            │
            ▼
-[Admin Inspeksi Kondisi Fisik Eksemplar]
+[Pemeriksaan Kondisi Buku]
            │
-           ├── Kondisi: Baik (Denda: Rp 0)
-           ├── Kondisi: Rusak Ringan (Denda: Rp 10.000)
-           ├── Kondisi: Rusak Berat (Denda: Rp 25.000)
-           └── Kondisi: Hilang (Denda: Rp 50.000, stok tidak dikembalikan)
+           ├── Baik: Denda Rp 0
+           ├── Rusak Ringan: Denda Rp 10.000
+           ├── Rusak Berat: Denda Rp 25.000
+           └── Hilang: Denda Rp 50.000 (stok tidak ditambah)
            │
            ▼
-[Status: DIKEMBALIKAN] ───────────────────> Stok buku otomatis dikembalikan (+1)*
-                                            Data tercatat di riwayat & laporan
+[Status: Dikembalikan] ───────────────> Stok buku ditambah kembali (+1)
 ```
 
 ---
 
-## Mekanisme Denda dan Kondisi Buku
+## Denda dan Kondisi Buku
 
-Untuk menjaga kualitas dan integritas inventaris koleksi buku sekolah, sistem menerapkan aturan penilaian kondisi fisik dan penetapan denda otomatis saat proses pengembalian (*check-in*):
+Penetapan denda dilakukan saat buku dikembalikan berdasarkan kondisi fisik eksemplar:
 
-| Kondisi Buku | Status Eksemplar | Besaran Denda | Tindakan Sistem |
+| Kondisi Buku | Status Eksemplar | Besaran Denda | Keterangan |
 |---|---|---|---|
-| **Baik** | `tersedia` | **Rp 0** | Stok buku bertambah (+1). Eksemplar siap dipinjamkan kembali. |
-| **Rusak Ringan** | `tersedia` | **Rp 10.000** | Catatan kerusakan disimpan, stok bertambah (+1) untuk penanganan/perbaikan ringan. |
-| **Rusak Berat** | `tersedia` | **Rp 25.000** | Catatan kerusakan berat dicatat dalam riwayat eksemplar, stok buku bertambah (+1). |
-| **Hilang** | `hilang` | **Rp 50.000** | Status eksemplar diubah menjadi hilang, stok buku **tidak dikembalikan** ke peredaran. |
+| **Baik** | `tersedia` | Rp 0 | Stok buku bertambah (+1) dan siap dipinjamkan kembali. |
+| **Rusak Ringan** | `tersedia` | Rp 10.000 | Catatan kerusakan disimpan, stok bertambah (+1) untuk diperbaiki. |
+| **Rusak Berat** | `tersedia` | Rp 25.000 | Kerusakan dicatat pada eksemplar, stok bertambah (+1). |
+| **Hilang** | `hilang` | Rp 50.000 | Status eksemplar diubah menjadi hilang dan stok tidak dikembalikan. |
 
 ---
 
-## Memulai
-Panduan Instalasi dan Menjalankan Program di Lingkungan Lokal.
+## Panduan Instalasi
 
-### Prasyarat Perangkat Lunak
+### Kebutuhan Sistem
 
-Pastikan perangkat berikut telah terpasang di komputer Anda:
-
-- **Node.js**: Versi 18.x atau yang lebih baru (disarankan LTS)
-- **NPM**: Bawaan dari Node.js
-- **MySQL Database Server**: Laragon / XAMPP / MySQL Community Server
-- **Git**
-- Peramban web modern (Google Chrome, Mozilla Firefox, Microsoft Edge, dll)
+- Node.js versi 18 atau lebih baru
+- NPM
+- Server MySQL (Laragon, XAMPP, atau MySQL mandiri)
+- Git
+- Web browser modern
 
 ---
 
-### Panduan Instalasi dan Menjalankan Program
+### Langkah Menjalankan Aplikasi
 
-Ikuti langkah-langkah berikut secara berurutan untuk menjalankan proyek di lingkungan komputer lokal.
-
-### 1. Kloning Repositori
-
-Buka Terminal / Command Prompt / PowerShell, lalu jalankan:
-
-```bash
-git clone https://github.com/fidhera/pppl-perpustakaan.git
-cd perpustakaan
-```
-
-### 2. Konfigurasi Basis Data (Database MySQL)
-
-1. Jalankan layanan MySQL melalui panel **Laragon** atau **XAMPP**.
-2. Buka antarmuka manajemen basis data (phpMyAdmin, HeidiSQL, atau DBeaver).
-3. Buat database baru dengan nama:
-   ```sql
-   CREATE DATABASE perpustakaan;
+1. **Kloning Repositori**
+   ```bash
+   git clone https://github.com/fidhera/pppl-perpustakaan.git
+   cd perpustakaan
    ```
-4. Impor berkas struktur dan data awal yang telah disediakan:
+
+2. **Siapkan Basis Data**
+   - Buka MySQL melalui Laragon atau XAMPP.
+   - Buat database baru bernama `perpustakaan`:
+     ```sql
+     CREATE DATABASE perpustakaan;
+     ```
+   - Impor berkas struktur dan data awal:
+     ```text
+     perpustakaan.sql
+     ```
+
+3. **Konfigurasi Berkas `.env`**
+   Pastikan terdapat berkas `.env` di folder utama:
+   ```env
+   PORT=3000
+   NODE_ENV=development
+
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_NAME=perpustakaan
+   DB_USER=root
+   DB_PASSWORD=
+
+   JWT_SECRET=perpustakaan_secret_key_2024_sangat_rahasia
+   JWT_EXPIRES_IN=24h
+
+   UPLOAD_DIR=uploads
+   MAX_FILE_SIZE=5242880
+   ```
+
+4. **Pasang Dependensi**
+   ```bash
+   npm install
+   ```
+
+5. **Jalankan Aplikasi**
+   Untuk mode pengembangan:
+   ```bash
+   npm run dev
+   ```
+   Atau mode standar:
+   ```bash
+   npm start
+   ```
+
+6. **Buka Aplikasi di Browser**
+   Buka alamat berikut di browser:
    ```text
-   perpustakaan.sql
+   http://localhost:3000
    ```
-
-### 3. Konfigurasi Environment Variable (`.env`)
-
-Pastikan terdapat berkas `.env` di direktori utama proyek. Anda dapat menyesuaikan pengaturannya sebagai berikut:
-
-```env
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# Database Configuration (MySQL)
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=perpustakaan
-DB_USER=root
-DB_PASSWORD=
-
-# JWT Configuration
-JWT_SECRET=perpustakaan_secret_key_2024_sangat_rahasia
-JWT_EXPIRES_IN=24h
-
-# Upload Configuration
-UPLOAD_DIR=uploads
-MAX_FILE_SIZE=5242880
-```
-
-### 4. Memasang Dependensi Pustaka
-
-Jalankan perintah instalasi paket modul Node.js:
-
-```bash
-npm install
-```
-
-### 5. Menjalankan Aplikasi
-
-Jalankan server dalam mode pengembangan (*development mode* dengan auto-reload):
-
-```bash
-npm run dev
-```
-
-Atau jalankan dalam mode standar:
-
-```bash
-npm start
-```
-
-Setelah server aktif, terminal akan menampilkan konfirmasi:
-
-```text
-Database connected successfully.
-Server running on port 3000
-http://localhost:3000
-```
-
-### 6. Mengakses Antarmuka Sistem
-
-Buka peramban web dan akses alamat:
-
-```text
-http://localhost:3000
-```
 
 ---
 
-## Direktori
+## Struktur Direktori
 
 ```text
 perpustakaan/
-│
 ├── config/
-│   └── database.js            # Konfigurasi koneksi MySQL via Sequelize ORM
-│
+│   └── database.js            # Koneksi MySQL via Sequelize
 ├── middleware/
-│   ├── auth.js                # Middleware verifikasi token JWT & Role-Based Access
-│   └── upload.js              # Konfigurasi Multer untuk penyimpanan berkas cover & avatar
-│
+│   ├── auth.js                # Verifikasi token JWT dan hak akses
+│   └── upload.js              # Pengaturan upload gambar sampul dan foto profil
 ├── models/
-│   ├── Book.js                # Model data buku utama (judul, pengarang, stok, rak)
-│   ├── BookCopy.js            # Model data eksemplar fisik buku & kondisi
-│   ├── Booking.js             # Model transaksi booking & sirkulasi peminjaman
-│   ├── Category.js            # Model kategori / genre buku
-│   ├── LandingSetting.js      # Model penyimpanan konfigurasi CMS landing page
-│   ├── Notification.js        # Model notifikasi pengguna
-│   ├── Return.js              # Model pengembalian buku, denda, & status kondisi
-│   ├── User.js                # Model pengguna (admin, pimpinan, siswa)
-│   └── index.js               # Pengaturan relasi antar model (Associations)
-│
+│   ├── Book.js                # Data buku
+│   ├── BookCopy.js            # Data eksemplar fisik buku
+│   ├── Booking.js             # Data transaksi peminjaman
+│   ├── Category.js            # Kategori buku
+│   ├── LandingSetting.js      # Pengaturan konten beranda
+│   ├── Notification.js        # Data notifikasi pengguna
+│   ├── Return.js              # Data pengembalian dan denda
+│   ├── User.js                # Data pengguna
+│   └── index.js               # Relasi antar tabel
 ├── routes/
-│   ├── auth.js                # Endpoint login, registrasi siswa, & autentikasi
-│   ├── books.js               # Endpoint CRUD buku, pencarian, & inventaris eksemplar
-│   ├── bookings.js            # Endpoint sirkulasi (booking, approve, pickup, return)
-│   ├── categories.js          # Endpoint pengelolaan kategori buku
-│   ├── landing.js             # Endpoint CMS konten dan data landing page
-│   ├── notifications.js       # Endpoint notifikasi pengguna
-│   ├── reports.js             # Endpoint analitik, buku populer, & statistik dashboard
-│   └── users.js               # Endpoint manajemen profil, onboarding, & kelola user
-│
+│   ├── auth.js                # Rute login dan autentikasi
+│   ├── books.js               # Rute kelola dan pencarian buku
+│   ├── bookings.js            # Rute proses peminjaman buku
+│   ├── categories.js          # Rute kategori buku
+│   ├── landing.js             # Rute konten beranda
+│   ├── notifications.js       # Rute notifikasi
+│   ├── reports.js             # Rute laporan dan analitik
+│   └── users.js               # Rute pengguna dan profil
 ├── public/
 │   ├── css/
-│   │   └── style.css          # Desain sistem antarmuka, variabel warna, & layout modern
-│   ├── img/
-│   │   ├── library_reading_room.jpg               # Gambar latar beranda
-│   │   └── logo_smp-informatika-bina-generasi.png  # Logo resmi sekolah
+│   │   └── style.css          # Gaya antarmuka sistem
+│   ├── img/                   # Gambar latar dan logo sekolah
 │   ├── js/
-│   │   ├── api.js             # Modul wrapper HTTP fetch request ke backend API
-│   │   ├── app.js             # Entry point inisialisasi router SPA
-│   │   ├── auth.js            # Manajemen session, token JWT, & state login
-│   │   ├── components.js      # Komponen UI dinamis (Navbar, Sidebar, Modal, Toast)
-│   │   ├── router.js          # Client-side hash routing SPA
-│   │   └── pages/
-│   │       ├── admin-bookings.js       # Antarmuka sirkulasi booking bagi admin
-│   │       ├── admin-books.js          # Antarmuka kelola buku bagi admin
-│   │       ├── admin-dashboard.js      # Antarmuka dashboard admin
-│   │       ├── admin-landing.js        # Antarmuka editor CMS landing page
-│   │       ├── admin-reports.js        # Antarmuka laporan analitik admin
-│   │       ├── admin-users.js          # Antarmuka manajemen user admin
-│   │       ├── book-condition.js       # Antarmuka inspeksi kondisi buku & chart donat
-│   │       ├── book-detail.js          # Modal penyajian detail buku
-│   │       ├── book-management.js      # Manajemen koleksi buku terpadu
-│   │       ├── catalog.js              # Halaman katalog pencarian buku siswa
-│   │       ├── category-management.js  # Manajemen kategori buku
-│   │       ├── circulation.js          # Halaman pengelolaan sirkulasi terpadu
-│   │       ├── dashboard.js            # Halaman utama dashboard pengguna
-│   │       ├── first-login.js          # Wizard onboarding akun pertama siswa
-│   │       ├── landing-services.js     # Halaman informasi layanan perpustakaan
-│   │       ├── landing.js              # Beranda publik perpustakaan sekolah
-│   │       ├── login.js                # Halaman masuk sistem
-│   │       ├── my-bookings.js          # Riwayat booking & peminjaman siswa
-│   │       ├── profile.js              # Halaman profil & ubah kata sandi
-│   │       ├── register.js             # Halaman pendaftaran siswa mandiri
-│   │       ├── reports.js              # Halaman ekspor & rekapitulasi laporan
-│   │       └── user-management.js      # Halaman pengelolaan pengguna
-│   └── index.html             # Dokumen HTML tunggal aplikasi (SPA Container)
-│
-├── uploads/
-│   ├── avatars/               # Direktori penyimpanan foto profil pengguna
-│   └── covers/                # Direktori penyimpanan gambar sampul buku
-│
-├── .env                       # Berkas variabel lingkungan konfigurasi server
-├── .gitignore                 # Berkas pengabaian berkas pada repositori Git
-├── package.json               # Konfigurasi dependensi dan skrip proyek
-├── perpustakaan.sql           # Skrip basis data awal sistem perpustakaan
-└── server.js                  # Entry point peladen Express.js utama
+│   │   ├── api.js             # Modul pemanggilan API backend
+│   │   ├── app.js             # Inisialisasi aplikasi SPA
+│   │   ├── auth.js            # Manajemen status login pengguna
+│   │   ├── components.js      # Komponen navbar, modal, dan pesan
+│   │   ├── router.js          # Pengatur rute halaman
+│   │   └── pages/             # Logika tampilan masing-masing halaman
+│   └── index.html             # Berkas HTML utama aplikasi
+├── uploads/                   # Direktori berkas sampul dan foto profil
+├── perpustakaan.sql           # Skrip basis data awal
+└── server.js                  # Titik masuk server Express
 ```
 
 ---
 
-## Penulis
-Ditulis dan dikembangkan oleh: [Raffael Fidhera](https://instagram.com/fidhera)
+## Pengembang
+Dikembangkan oleh: [Raffael Fidhera](https://instagram.com/fidhera)
